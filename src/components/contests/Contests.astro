@@ -1,0 +1,608 @@
+---
+import SectionHead from '../SectionHead.astro';
+import Icon from '../Icon.astro';
+import Zoomable from '../Zoomable.astro';
+import RatingChart from './RatingChart.astro';
+import { contests, icpcTeamPhoto, otherResults, problemsSet, PROBLEMS_SOLVED, TEAM, TEAMMATES } from '../../data/contests';
+import { getCodeforces, rankFor } from '../../data/codeforces';
+
+const cf = await getCodeforces();
+const rank = rankFor(cf.maxRating);
+const icpc = contests.filter((c) => c.kind === 'ICPC');
+const iupcs = contests.filter((c) => c.kind === 'IUPC');
+const [icpcFirst, icpcLast] = [icpc[0], icpc[icpc.length - 1]];
+const featured = new Set(['sust-2026', 'nwu-2025']);
+
+const stats = [
+  { value: String(cf.maxRating), label: 'max Codeforces rating', sub: rank.title, subClass: `cf-${rank.key}` },
+  { value: String(cf.contests), label: 'rated Codeforces contests' },
+  { value: PROBLEMS_SOLVED, label: 'problems solved' },
+  { value: String(icpc.length), label: 'ICPC Asia Dhaka Regionals' },
+  { value: String(iupcs.length), label: 'inter-university contests' },
+];
+---
+
+<section class="section" id="contests" aria-labelledby="contests-title">
+  <div class="container">
+    <SectionHead label="Competitive programming" title="The contest trail" id="contests-title">
+      I started competitive programming in 2023 and it has been a constant since: online most weeks, onsite whenever a
+      university hosts. Onsite, I compete as <span class="mono">{TEAM}</span> with {TEAMMATES.join(' and ')}.
+    </SectionHead>
+
+    <dl class="stats" data-reveal>
+      {
+        stats.map((s) => (
+          <div>
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="stats__value mono">{s.value}</span>
+              <span class="stats__label">
+                {s.label}
+                {s.sub && <span class:list={['stats__sub', s.subClass]}> · {s.sub}</span>}
+              </span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="overview">
+      <div data-reveal><RatingChart cf={cf} /></div>
+
+      <article class="icpc card" data-reveal style="--reveal-delay:1" aria-labelledby="icpc-title">
+        <p class="eyebrow">ICPC Asia Dhaka Regional</p>
+        <h3 id="icpc-title" class="icpc__ranks mono">
+          <span><small>{icpcFirst.season}</small>{icpcFirst.rank}</span>
+          <Icon name="arrow-right" size={28} class="icpc__arrow" />
+          <span class="icpc__now"><small>{icpcLast.season}</small>{icpcLast.rank}</span>
+        </h3>
+        <p class="icpc__text">
+          {icpcFirst.rank - icpcLast.rank} places higher in one year, at the national stage of the ICPC.
+        </p>
+        <div class="icpc__photo">
+          <Zoomable src={icpcTeamPhoto.src} alt={icpcTeamPhoto.alt} caption={icpcTeamPhoto.caption} group="contests" sizes="(max-width: 960px) 90vw, 26rem" />
+        </div>
+      </article>
+    </div>
+
+    <div class="trail-head" data-reveal>
+      <div>
+        <h3 class="sub-title display">The trail, contest by contest</h3>
+        <p class="muted">Every onsite team contest so far, oldest first. Tap a photo to see it larger.</p>
+      </div>
+      <div class="trail-nav" aria-hidden="true">
+        <button type="button" class="trail-btn" data-trail="-1" tabindex="-1"><Icon name="chevron-left" size={20} /></button>
+        <button type="button" class="trail-btn" data-trail="1" tabindex="-1"><Icon name="chevron-right" size={20} /></button>
+      </div>
+    </div>
+
+    <div class="trail" data-reveal role="region" aria-label="Onsite contests, oldest first" tabindex="0">
+      <ol>
+        {
+          contests.map((c, i) => {
+            const newSeason = i === 0 || contests[i - 1].season !== c.season;
+            return (
+              <li class:list={['contest', { 'contest--featured': featured.has(c.id), 'contest--text': !c.photo, 'contest--season': newSeason }]}>
+                <p class="contest__season mono" aria-hidden={!newSeason}>
+                  {newSeason ? c.season : ''}
+                </p>
+                <div class="contest__card">
+                  <div class="contest__photo">
+                    {c.photo ? (
+                      <Zoomable src={c.photo.src} alt={c.photo.alt} caption={c.photo.caption} group="contests" sizes="(max-width: 640px) 72vw, 18rem" />
+                    ) : (
+                      <span class="contest__placeholder display" aria-hidden="true">
+                        {c.name.split(' ')[0]}
+                      </span>
+                    )}
+                  </div>
+                  <div class="contest__body">
+                    <p class="contest__rank mono">
+                      <span class="sr-only">Rank </span>#{c.rank}
+                    </p>
+                    <h4>
+                      {c.name} {c.season}
+                    </h4>
+                    <p class="contest__meta">
+                      {c.host ?? c.city}
+                      {c.host && c.city && !c.host.includes(c.city) && ` · ${c.city}`}
+                    </p>
+                    {c.team !== TEAM && <p class="contest__team">Team {c.team}</p>}
+                    {c.highlight && <p class="contest__highlight">{c.highlight}</p>}
+                  </div>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+
+    <div class="extras">
+      <section class="setter" aria-labelledby="setter-title" data-reveal>
+        <p class="eyebrow">Problem setting</p>
+        <h3 id="setter-title" class="display">Problems I’ve written</h3>
+        <p class="muted">
+          Set for Intra UIU Programming Contests and public on Codeforces Gym. Writing a problem means writing the
+          statement, a correct solution, and tests that break the wrong ones.
+        </p>
+        <ul class="problems">
+          {
+            problemsSet.map((p) => (
+              <li>
+                <a href={p.href} target="_blank" rel="noopener">
+                  <span class="problems__ref mono">{p.ref}</span>
+                  <span class="problems__title">{p.title}</span>
+                  <Icon name="arrow-up-right" class="problems__icon" />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="others" aria-labelledby="others-title" data-reveal style="--reveal-delay:1">
+        <p class="eyebrow">Also</p>
+        <h3 id="others-title" class="display">Other contests</h3>
+        <table>
+          <caption class="sr-only">Other contest results</caption>
+          <thead class="sr-only">
+            <tr><th scope="col">Contest</th><th scope="col">Result</th></tr>
+          </thead>
+          <tbody>
+            {
+              otherResults.map((r) => (
+                <tr>
+                  <th scope="row">
+                    {r.name}
+                    {r.note && <span class="muted">, {r.note}</span>}
+                  </th>
+                  <td class="mono">{r.result}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.trail').forEach((trail) => {
+    const buttons = trail.parentElement?.querySelectorAll<HTMLButtonElement>('[data-trail]') ?? [];
+    const update = () => {
+      const max = trail.scrollWidth - trail.clientWidth - 2;
+      buttons.forEach((b) => (b.disabled = b.dataset.trail === '-1' ? trail.scrollLeft <= 2 : trail.scrollLeft >= max));
+    };
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => trail.scrollBy({ left: Number(b.dataset.trail) * trail.clientWidth * 0.8, behavior: 'smooth' })),
+    );
+    trail.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+    overflow: hidden;
+  }
+
+  .stats > div + div {
+    border-left: 1px solid var(--line);
+  }
+
+  .stats dd {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1.1rem clamp(0.75rem, 2vw, 1.4rem);
+  }
+
+  .stats__value {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .stats__label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  .stats__sub {
+    color: var(--cf, var(--accent));
+    font-weight: 500;
+  }
+
+  .overview {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    align-items: stretch;
+  }
+
+  .icpc {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    gap: 0.9rem;
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  .icpc__ranks {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.9rem;
+    font-size: clamp(2.4rem, 1.8rem + 2.4vw, 3.6rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .icpc__ranks span {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .icpc__ranks small {
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .icpc__ranks :global(.icpc__arrow) {
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .icpc__now {
+    color: var(--accent);
+  }
+
+  .icpc__text {
+    color: var(--ink-2);
+  }
+
+  .icpc__photo {
+    min-height: 12rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .trail-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1.5rem;
+    margin: clamp(3.5rem, 7vw, 5.5rem) 0 1.25rem;
+  }
+
+  .sub-title {
+    font-size: var(--step-3);
+    margin-bottom: 0.5rem;
+  }
+
+  .trail-nav {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .trail-btn {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-elev);
+    transition: background-color 0.2s var(--ease), opacity 0.2s var(--ease);
+  }
+
+  .trail-btn:hover {
+    background: var(--surface);
+  }
+
+  .trail-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .trail {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+    padding-bottom: 1rem;
+  }
+
+  .trail ol {
+    display: flex;
+    width: max-content;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contest {
+    --w: clamp(14.5rem, 62vw, 17rem);
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    width: var(--w);
+    padding-right: clamp(0.75rem, 1.5vw, 1.1rem);
+    scroll-snap-align: start;
+  }
+
+  /* The rail: a line across the top of every card, with a node per contest. */
+  .contest::before {
+    content: '';
+    position: absolute;
+    top: 2.05rem;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .contest:last-child::before {
+    right: auto;
+    width: 1rem;
+  }
+
+  .contest::after {
+    content: '';
+    position: absolute;
+    top: calc(2.05rem - 4px);
+    left: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+  }
+
+  .contest--featured::after {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .contest__season {
+    height: 1.5rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .contest__card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elev);
+    overflow: hidden;
+  }
+
+  .contest--featured .contest__card {
+    border-color: color-mix(in oklab, var(--accent) 45%, var(--line));
+  }
+
+  .contest__photo {
+    aspect-ratio: 4 / 5;
+    background: var(--surface);
+  }
+
+  .contest__placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: 4rem;
+    color: var(--line-strong);
+    background:
+      repeating-linear-gradient(0deg, transparent 0 27px, color-mix(in oklab, var(--line) 70%, transparent) 27px 28px),
+      var(--surface);
+  }
+
+  .contest__body {
+    display: grid;
+    align-content: start;
+    gap: 0.2rem;
+    padding: 0.85rem 0.95rem 1rem;
+  }
+
+  .contest__rank {
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  .contest h4 {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .contest__meta,
+  .contest__team {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .contest__highlight {
+    justify-self: start;
+    margin-top: 0.45rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .extras {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 3vw, 2rem);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .setter,
+  .others {
+    display: grid;
+    align-content: start;
+    gap: 0.8rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .setter h3,
+  .others h3 {
+    font-size: var(--step-2);
+  }
+
+  .setter > p.muted {
+    font-size: 0.95rem;
+  }
+
+  .problems {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .problems a {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .problems a:hover {
+    background: var(--accent-soft);
+  }
+
+  .problems__ref {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .problems__title {
+    font-weight: 600;
+  }
+
+  .problems a :global(.problems__icon) {
+    color: var(--muted);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.93rem;
+  }
+
+  tr + tr th,
+  tr + tr td {
+    border-top: 1px solid var(--line);
+  }
+
+  th {
+    text-align: left;
+    font-weight: 500;
+    padding: 0.7rem 1rem 0.7rem 0;
+  }
+
+  td {
+    text-align: right;
+    white-space: nowrap;
+    padding: 0.7rem 0;
+  }
+
+  @media (max-width: 1060px) {
+    .stats {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .stats > div:nth-child(4) {
+      border-left: 0;
+    }
+    .stats > div:nth-child(n + 4) {
+      border-top: 1px solid var(--line);
+    }
+    .overview {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .icpc {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr;
+      column-gap: 1.5rem;
+    }
+    .icpc__photo {
+      grid-column: 2;
+      grid-row: 1 / -1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .trail-nav {
+      display: none;
+    }
+    .extras {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .icpc {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .icpc__photo {
+      grid-column: auto;
+      grid-row: auto;
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .stats > div:nth-child(n) {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .stats > div:nth-child(even) {
+      border-left: 1px solid var(--line);
+    }
+    .stats > div:first-child {
+      grid-column: 1 / -1;
+      border-top: 0;
+    }
+    .stats > div:nth-child(2) {
+      border-left: 0;
+    }
+    .stats > div:nth-child(odd):not(:first-child) {
+      border-left: 1px solid var(--line);
+    }
+    .problems a {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .problems__ref {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

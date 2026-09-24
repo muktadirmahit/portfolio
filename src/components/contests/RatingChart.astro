@@ -1,0 +1,300 @@
+---
+// Codeforces rating history, computed at build time. The plot is an SVG stretched to the
+// container; labels and markers are HTML positioned in percentages so text never scales down.
+import type { CodeforcesData } from '../../data/codeforces';
+
+interface Props {
+  cf: CodeforcesData;
+}
+const { cf } = Astro.props;
+const h = cf.history;
+
+const fmtMonth = (t: number) => new Date(t * 1000).toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+const t0 = h[0].t;
+const t1 = h[h.length - 1].t;
+const yMin = Math.min(300, Math.floor((Math.min(...h.map((p) => p.r)) - 50) / 100) * 100);
+const yMax = Math.max(1400, Math.ceil((cf.maxRating + 100) / 100) * 100);
+
+const x = (t: number) => ((t - t0) / Math.max(1, t1 - t0)) * 100;
+const y = (r: number) => (1 - (r - yMin) / (yMax - yMin)) * 100;
+
+const W = 1000;
+const H = 400;
+const line = h.map((p, i) => `${i ? 'L' : 'M'}${((x(p.t) / 100) * W).toFixed(1)} ${((y(p.r) / 100) * H).toFixed(1)}`).join(' ');
+const area = `${line} L${W} ${H} L0 ${H} Z`;
+
+// Codeforces rank bands visible in this range.
+const bands = [
+  { from: 0, to: 1200, name: 'Newbie', cls: 'newbie' },
+  { from: 1200, to: 1400, name: 'Pupil', cls: 'pupil' },
+  { from: 1400, to: 1600, name: 'Specialist', cls: 'specialist' },
+]
+  .map((b) => ({ ...b, from: Math.max(b.from, yMin), to: Math.min(b.to, yMax) }))
+  .filter((b) => b.to > b.from);
+
+const gridlines = [];
+for (let r = Math.ceil(yMin / 200) * 200; r < yMax; r += 200) gridlines.push(r);
+
+const years: { label: string; x: number }[] = [];
+for (let yr = new Date(t0 * 1000).getUTCFullYear() + 1; yr <= new Date(t1 * 1000).getUTCFullYear(); yr++) {
+  years.push({ label: String(yr), x: x(Date.UTC(yr, 0, 1) / 1000) });
+}
+
+const maxIdx = h.findIndex((p) => p.r === cf.maxRating);
+const maxPoint = h[maxIdx];
+const points = h.map((p) => [+x(p.t).toFixed(2), +y(p.r).toFixed(2), p.r, fmtMonth(p.t), p.c]);
+const summary = `Codeforces rating over ${h.length} rated contests, from ${h[0].r} in ${fmtMonth(t0)} to a maximum of ${cf.maxRating} in ${fmtMonth(maxPoint.t)}.`;
+---
+
+<figure class="chart">
+  <figcaption class="chart__cap">
+    <span class="eyebrow">Codeforces rating</span>
+    <a class="link-arrow" href={`https://codeforces.com/profile/${cf.handle}`} target="_blank" rel="noopener">{cf.handle}</a>
+  </figcaption>
+
+  <div class="chart__plot" data-points={JSON.stringify(points)} role="img" aria-label={summary}>
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
+      {bands.map((b) => <rect class={`band band--${b.cls}`} x="0" width={W} y={(y(b.to) / 100) * H} height={((y(b.from) - y(b.to)) / 100) * H} />)}
+      {gridlines.map((r) => <line class="grid" x1="0" x2={W} y1={(y(r) / 100) * H} y2={(y(r) / 100) * H} vector-effect="non-scaling-stroke" />)}
+      <path class="area" d={area} />
+      <path class="line" d={line} vector-effect="non-scaling-stroke" />
+    </svg>
+
+    {bands.map((b) => <span class={`band-label mono band-label--${b.cls}`} style={`top:${y(b.to)}%`}>{b.name}</span>)}
+    {gridlines.map((r) => <span class="y-label mono" style={`top:${y(r)}%`}>{r}</span>)}
+
+    <span class="max" style={`left:${x(maxPoint.t)}%;top:${y(maxPoint.r)}%`}>
+      <span class="max__label mono">max {cf.maxRating}</span>
+    </span>
+
+    <div class="tip mono" hidden></div>
+    <span class="cursor" hidden></span>
+  </div>
+
+  <div class="x-axis mono" aria-hidden="true">
+    <span style="left:0">{fmtMonth(t0)}</span>
+    {years.map((yr) => <span style={`left:${yr.x}%`}>{yr.label}</span>)}
+  </div>
+
+  <p class="chart__note">
+    {`${h.length} rated contests since ${fmtMonth(t0)}. `}
+    {cf.source === 'live' ? 'Pulled from the Codeforces API when this site was built.' : `Codeforces data as of ${cf.asOf}.`}
+  </p>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.chart__plot').forEach((plot) => {
+    const pts = JSON.parse(plot.dataset.points ?? '[]') as [number, number, number, string, string][];
+    const tip = plot.querySelector<HTMLElement>('.tip')!;
+    const cursor = plot.querySelector<HTMLElement>('.cursor')!;
+    if (!pts.length) return;
+
+    const show = (clientX: number) => {
+      const rect = plot.getBoundingClientRect();
+      const px = ((clientX - rect.left) / rect.width) * 100;
+      let best = pts[0];
+      for (const p of pts) if (Math.abs(p[0] - px) < Math.abs(best[0] - px)) best = p;
+      const [bx, by, r, date, name] = best;
+      cursor.hidden = false;
+      cursor.style.left = `${bx}%`;
+      cursor.style.top = `${by}%`;
+      tip.hidden = false;
+      tip.textContent = '';
+      const strong = document.createElement('strong');
+      strong.textContent = String(r);
+      const meta = document.createElement('span');
+      meta.textContent = `${date} · ${name}`;
+      tip.append(strong, meta);
+      tip.style.left = `${Math.min(Math.max(bx, 18), 82)}%`;
+      tip.style.top = `${by}%`;
+      tip.classList.toggle('below', by < 35);
+    };
+    const hide = () => {
+      tip.hidden = true;
+      cursor.hidden = true;
+    };
+
+    plot.addEventListener('pointermove', (e) => show(e.clientX));
+    plot.addEventListener('pointerdown', (e) => show(e.clientX));
+    plot.addEventListener('pointerleave', hide);
+  });
+</script>
+
+<style>
+  .chart {
+    display: grid;
+    gap: 0.75rem;
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+  }
+
+  .chart__cap {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .chart__cap .link-arrow {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .chart__plot {
+    position: relative;
+    aspect-ratio: 16 / 7.5;
+    margin-left: 2.4rem;
+    touch-action: pan-y;
+    cursor: crosshair;
+  }
+
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .band--newbie {
+    fill: color-mix(in oklab, var(--muted) 5%, transparent);
+  }
+
+  .band--pupil {
+    fill: color-mix(in oklab, #16a34a 13%, transparent);
+  }
+
+  .band--specialist {
+    fill: color-mix(in oklab, #1f8fa8 14%, transparent);
+  }
+
+  .grid {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .area {
+    fill: color-mix(in oklab, var(--ink) 3%, transparent);
+  }
+
+  .line {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.75;
+    stroke-linejoin: round;
+  }
+
+  .band-label {
+    position: absolute;
+    left: 0.5rem;
+    translate: 0 0.3rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .band-label--pupil {
+    color: #16a34a;
+  }
+
+  .y-label {
+    position: absolute;
+    left: -2.4rem;
+    width: 2rem;
+    text-align: right;
+    translate: 0 -50%;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .max {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+
+  .max__label {
+    position: absolute;
+    right: 0;
+    bottom: 150%;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .x-axis {
+    position: relative;
+    height: 1.2rem;
+    margin-left: 2.4rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .x-axis span {
+    position: absolute;
+    translate: 0 0;
+    white-space: nowrap;
+  }
+
+  .x-axis span + span {
+    translate: -50% 0;
+  }
+
+  .chart__note {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .cursor {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    pointer-events: none;
+  }
+
+  .tip {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    gap: 0.1rem;
+    max-width: 16rem;
+    padding: 0.45rem 0.6rem;
+    translate: -50% calc(-100% - 12px);
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.72rem;
+    line-height: 1.35;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+  }
+
+  .tip.below {
+    translate: -50% 14px;
+  }
+
+  .tip :global(strong) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    .chart__plot {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

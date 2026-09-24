@@ -1,0 +1,292 @@
+---
+import SectionHead from '../SectionHead.astro';
+import Zoomable from '../Zoomable.astro';
+import BdMap from './BdMap.astro';
+import { places, defaultPlaceId } from '../../data/places';
+
+const initial = places.some((p) => p.id === defaultPlaceId) ? defaultPlaceId : places[0].id;
+---
+
+<section class="section" id="beyond" aria-labelledby="beyond-title">
+  <div class="container">
+    <SectionHead label="Beyond the screen" title="Getting to know my own country first" id="beyond-title">
+      Travel is how I switch off. I’ve been seeing Bangladesh one trip at a time: some for contests, some with family,
+      some just to see what’s there. Away from the desk, I also take my health and fitness seriously.
+    </SectionHead>
+
+    <div class="explorer" data-explorer>
+      <div class="explorer__map" data-reveal>
+        <BdMap places={places} />
+        <ul class="legend" aria-label="Map legend">
+          <li><span class="swatch swatch--home"></span>Home</li>
+          <li><span class="swatch swatch--contest"></span>Went for a contest</li>
+          <li><span class="swatch swatch--travel"></span>Travel</li>
+        </ul>
+      </div>
+
+      <div class="explorer__side" data-reveal style="--reveal-delay:1">
+        <div class="tabs" role="tablist" aria-label="Places">
+          {
+            places.map((p) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${p.id}`}
+                class={`tab tab--${p.kind}`}
+                aria-selected={p.id === initial ? 'true' : 'false'}
+                aria-controls={`panel-${p.id}`}
+                tabindex={p.id === initial ? 0 : -1}
+                data-place={p.id}
+              >
+                {p.name}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          places.map((p) => (
+            <article class="panel" role="tabpanel" id={`panel-${p.id}`} aria-labelledby={`tab-${p.id}`} data-panel={p.id} tabindex="0">
+              <div class:list={['panel__photos', { single: p.photos.length === 1 }]}>
+                {p.photos.map((ph) => (
+                  <div class="panel__photo">
+                    <Zoomable src={ph.src} alt={ph.alt} caption={ph.alt} group={`place-${p.id}`} widths={[320, 520, 760]} sizes="(max-width: 900px) 46vw, 20rem" />
+                  </div>
+                ))}
+              </div>
+              <div class="panel__text">
+                <h3 class="display">
+                  {p.name}
+                  {p.region && <span class="muted">, {p.region}</span>}
+                </h3>
+                <p class="panel__note">{p.note}</p>
+                <p class="panel__meta">
+                  {p.with && <span class="chip">With {p.with.charAt(0).toLowerCase() + p.with.slice(1)}</span>}
+                  {p.contests?.map((c) => <span class="chip chip--contest">{c}</span>)}
+                </p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-explorer]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    const pins = [...root.querySelectorAll<HTMLElement>('.pin')];
+
+    const strip = root.querySelector<HTMLElement>('[role="tablist"]')!;
+
+    const select = (id: string, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t.dataset.place === id;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus({ preventScroll: true });
+        // Keep the chosen chip visible when the chips scroll sideways on small screens (never scrolls the page).
+        if (on && strip.scrollWidth > strip.clientWidth) {
+          strip.scrollTo({ left: t.offsetLeft - strip.clientWidth / 2 + t.offsetWidth / 2, behavior: 'smooth' });
+        }
+      });
+      panels.forEach((p) => (p.hidden = p.dataset.panel !== id));
+      pins.forEach((p) => p.classList.toggle('is-active', p.dataset.place === id));
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t.dataset.place!));
+      t.addEventListener('keydown', (e) => {
+        const dir = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+        if (e.key === 'Home' || e.key === 'End') {
+          e.preventDefault();
+          select(tabs[e.key === 'Home' ? 0 : tabs.length - 1].dataset.place!, true);
+        } else if (dir) {
+          e.preventDefault();
+          select(tabs[(i + dir + tabs.length) % tabs.length].dataset.place!, true);
+        }
+      });
+    });
+    pins.forEach((p) => p.addEventListener('click', () => select(p.dataset.place!)));
+
+    const initial = tabs.find((t) => t.getAttribute('aria-selected') === 'true')?.dataset.place;
+    if (initial) select(initial);
+    root.classList.add('is-ready');
+  });
+</script>
+
+<style>
+  .explorer {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .explorer__map {
+    display: grid;
+    gap: 1rem;
+    max-width: 30rem;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .swatch--contest {
+    background: var(--sun);
+  }
+
+  .swatch--home {
+    background: var(--ink);
+  }
+
+  .explorer__side {
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+
+  .tabs {
+    display: none;
+  }
+
+  :global(.is-ready) .tabs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tab {
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    font-size: 0.88rem;
+    color: var(--ink-2);
+    transition: background-color 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  .tab:hover {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .tab[aria-selected='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+
+  .panel {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .panel + .panel {
+    margin-top: 2.5rem;
+  }
+
+  :global(.is-ready) .panel + .panel {
+    margin-top: 0;
+  }
+
+  .panel:focus-visible {
+    outline-offset: 6px;
+  }
+
+  .panel__photos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .panel__photo {
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .single {
+    grid-template-columns: minmax(0, 0.6fr);
+  }
+
+  .panel__text {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .panel h3 {
+    font-size: var(--step-3);
+  }
+
+  .panel h3 .muted {
+    font-size: 0.6em;
+  }
+
+  .panel__note {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.3;
+    color: var(--ink-2);
+  }
+
+  .panel__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .chip--contest {
+    border-color: color-mix(in oklab, var(--sun) 45%, var(--line));
+    color: var(--sun);
+  }
+
+  @media (max-width: 900px) {
+    .explorer {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .explorer__map {
+      max-width: 22rem;
+      margin-inline: auto;
+      width: 100%;
+    }
+    :global(.is-ready) .tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      scroll-padding-inline: var(--gutter);
+    }
+    :global(.is-ready) .tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .tab {
+      flex: none;
+    }
+  }
+</style>

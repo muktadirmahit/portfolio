@@ -1,0 +1,265 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/profile';
+
+const links = [
+  { href: '#work', label: 'Work' },
+  { href: '#contests', label: 'Contests' },
+  { href: '#leadership', label: 'Leadership' },
+  { href: '#about', label: 'About' },
+  { href: '#beyond', label: 'Beyond' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a href="#top" class="brand" aria-label={`${profile.name}, back to top`}>
+      <span class="brand__mark display">Mahit</span><span class="dot" aria-hidden="true"></span>
+    </a>
+
+    <nav class="nav" aria-label="Sections">
+      <ul>
+        {links.map((l) => <li><a href={l.href} data-spy={l.href.slice(1)}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <a class="btn btn--ghost header__cv" href={profile.cv.href} target="_blank" rel="noopener">CV</a>
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch color theme">
+        <Icon name="moon" size={18} class="i-moon" />
+        <Icon name="sun" size={18} class="i-sun" />
+      </button>
+      <button class="icon-btn menu-btn" type="button" popovertarget="mobile-menu" aria-label="Open menu">
+        <Icon name="menu" size={20} />
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" popover class="sheet">
+    <div class="sheet__top">
+      <span class="eyebrow">Sections</span>
+      <button class="icon-btn" type="button" popovertarget="mobile-menu" popovertargetaction="hide" aria-label="Close menu">
+        <Icon name="close" size={20} />
+      </button>
+    </div>
+    <nav aria-label="Sections (mobile)">
+      <ul>
+        {links.map((l) => <li><a href={l.href} class="display">{l.label}</a></li>)}
+      </ul>
+    </nav>
+    <a class="btn" href={profile.cv.href} target="_blank" rel="noopener"><Icon name="download" /> Download CV</a>
+  </div>
+</header>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.getElementById('theme-toggle');
+  // Light is the default; dark only when the visitor chose it with this button.
+  const isDark = () => root.dataset.theme === 'dark';
+  const label = () => toggle?.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+  label();
+  toggle?.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+    label();
+  });
+
+  // Close the mobile sheet after choosing a section.
+  const sheet = document.getElementById('mobile-menu');
+  sheet?.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('a')) sheet.hidePopover();
+  });
+
+  // Highlight the section currently in view.
+  const navLinks = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('[data-spy]').forEach((a) => navLinks.set(a.dataset.spy!, a));
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        navLinks.forEach((a) => a.removeAttribute('aria-current'));
+        navLinks.get(e.target.id)?.setAttribute('aria-current', 'true'); // the hero has no link, so it clears the highlight
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  ['top', ...navLinks.keys()].forEach((id) => {
+    const s = document.getElementById(id);
+    if (s) spy.observe(s);
+  });
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(12px);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    border-bottom: 1px solid color-mix(in oklab, var(--line) 70%, transparent);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 4rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2rem;
+    text-decoration: none;
+  }
+
+  .brand__mark {
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .brand .dot {
+    width: 0.4rem;
+    height: 0.4rem;
+  }
+
+  .nav {
+    margin-inline: auto;
+  }
+
+  .nav ul {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav a {
+    position: relative;
+    display: block;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.92rem;
+    color: var(--muted);
+    text-decoration: none;
+    border-radius: 999px;
+    transition: color 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .nav a:hover {
+    color: var(--ink);
+  }
+
+  .nav a[aria-current] {
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .header__cv {
+    padding: 0.45em 1em;
+    font-size: 0.88rem;
+  }
+
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink);
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .icon-btn:hover {
+    background: var(--surface);
+  }
+
+  .icon-btn :global(.i-sun) {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .icon-btn :global(.i-sun) {
+    display: block;
+  }
+
+  :global(:root[data-theme='dark']) .icon-btn :global(.i-moon) {
+    display: none;
+  }
+
+  .menu-btn {
+    display: none;
+  }
+
+  .sheet {
+    inset: 0 0 auto auto;
+    width: min(22rem, 100vw);
+    height: 100dvh;
+    margin: 0;
+    padding: 1rem 1.25rem 2rem;
+    border: 0;
+    border-left: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .sheet:popover-open {
+    display: flex;
+  }
+
+  .sheet::backdrop {
+    background: rgb(0 0 0 / 0.35);
+  }
+
+  .sheet__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sheet ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .sheet nav a {
+    display: block;
+    padding: 0.35rem 0;
+    font-size: 2.1rem;
+    text-decoration: none;
+  }
+
+  .sheet .btn {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  @media (max-width: 860px) {
+    .nav,
+    .header__cv {
+      display: none;
+    }
+    .header__actions {
+      margin-left: auto;
+    }
+    .menu-btn {
+      display: grid;
+    }
+  }
+</style>

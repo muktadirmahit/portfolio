@@ -1,0 +1,191 @@
+---
+// Bangladesh outline projected at build time from Natural Earth data (via world-atlas),
+// so the browser receives a plain SVG path and no mapping library.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { geoMercator, geoPath } from 'd3-geo';
+import { feature } from 'topojson-client';
+import type { Topology, GeometryCollection } from 'topojson-specification';
+import type { Place } from '../../data/places';
+
+interface Props {
+  places: Place[];
+}
+const { places } = Astro.props;
+
+const topo = JSON.parse(readFileSync(join(process.cwd(), 'node_modules/world-atlas/countries-10m.json'), 'utf8')) as Topology<{
+  countries: GeometryCollection<{ name: string }>;
+}>;
+const countries = feature(topo, topo.objects.countries);
+const bd = countries.features.find((f) => f.id === '050');
+if (!bd) throw new Error('Bangladesh (ISO 050) not found in world-atlas data');
+
+const W = 500;
+const projection = geoMercator().fitWidth(W, bd);
+const path = geoPath(projection).digits(1);
+const [[, y0], [, y1]] = path.bounds(bd);
+const H = Math.ceil(y1 + 2);
+projection.translate([projection.translate()[0], projection.translate()[1] - Math.min(0, y0)]);
+const outline = path(bd) ?? '';
+
+const pos = (p: Place) => {
+  const [px, py] = projection(p.coords) ?? [0, 0];
+  return { x: (px / W) * 100, y: (py / H) * 100, px, py };
+};
+
+const home = places.find((p) => p.kind === 'home');
+const homePos = home ? pos(home) : undefined;
+// Gentle curves from home to each contest city.
+const routes = homePos
+  ? places
+      .filter((p) => p.kind === 'contest')
+      .map((p) => {
+        const { px, py } = pos(p);
+        const mx = (homePos.px + px) / 2;
+        const my = (homePos.py + py) / 2;
+        const dx = px - homePos.px;
+        const dy = py - homePos.py;
+        const cx = mx - dy * 0.25;
+        const cy = my + dx * 0.25;
+        return `M${homePos.px.toFixed(1)} ${homePos.py.toFixed(1)} Q${cx.toFixed(1)} ${cy.toFixed(1)} ${px.toFixed(1)} ${py.toFixed(1)}`;
+      })
+  : [];
+---
+
+<div class="map" style={`aspect-ratio:${W}/${H}`}>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+    <path class="land" d={outline} />
+    {routes.map((d) => <path class="route" d={d} />)}
+  </svg>
+  <span class="sea display" aria-hidden="true">Bay of Bengal</span>
+  {
+    places.map((p) => {
+      const { x, y } = pos(p);
+      return (
+        <button
+          type="button"
+          class:list={['pin', `pin--${p.kind}`, { 'pin--label-below': y < 10 }]}
+          style={`left:${x}%;top:${y}%`}
+          data-place={p.id}
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          <span class="pin__label">{p.name}</span>
+        </button>
+      );
+    })
+  }
+</div>
+
+<style>
+  .map {
+    position: relative;
+    width: 100%;
+  }
+
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .land {
+    fill: var(--surface);
+    stroke: var(--line-strong);
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  .route {
+    fill: none;
+    stroke: var(--sun);
+    stroke-width: 1.4;
+    stroke-dasharray: 3 5;
+    opacity: 0.7;
+  }
+
+  .sea {
+    position: absolute;
+    left: 38%;
+    bottom: 4%;
+    font-style: italic;
+    font-size: clamp(0.85rem, 0.7rem + 0.6vw, 1.15rem);
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .pin {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    translate: -50% -50%;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    background: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+
+  .pin--contest {
+    background: var(--sun);
+    box-shadow: 0 0 0 1px var(--sun);
+  }
+
+  .pin--home {
+    width: 18px;
+    height: 18px;
+    background: var(--ink);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+
+  .pin::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+  }
+
+  .pin:hover,
+  .pin.is-active {
+    transform: scale(1.35);
+    z-index: 2;
+  }
+
+  .pin.is-active {
+    box-shadow:
+      0 0 0 1px var(--ink),
+      0 0 0 6px color-mix(in oklab, var(--ink) 15%, transparent);
+  }
+
+  .pin__label {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    translate: -50% 0;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.68rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    scale: 0.9;
+    transition: opacity 0.15s var(--ease), scale 0.15s var(--ease);
+    pointer-events: none;
+  }
+
+  .pin--label-below .pin__label {
+    bottom: auto;
+    top: calc(100% + 6px);
+  }
+
+  .pin:hover .pin__label,
+  .pin.is-active .pin__label {
+    opacity: 1;
+    scale: 0.75;
+  }
+</style>

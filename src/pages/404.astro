@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found · Mahit" description="This page does not exist." noindex>
+  <main id="main" class="nf container">
+    <p class="mono verdict">Wrong answer on test 1</p>
+    <h1 class="display">This page doesn’t exist.</h1>
+    <p class="lede">The link may be old, or the address may have a typo.</p>
+    <a class="btn" href="/">Back to the homepage</a>
+  </main>
+</Base>
+
+<style>
+  .nf {
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 1.25rem;
+    min-height: 100dvh;
+  }
+
+  .verdict {
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+
+  h1 {
+    font-size: var(--step-5);
+  }
+</style>

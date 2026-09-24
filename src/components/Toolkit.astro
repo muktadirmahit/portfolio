@@ -1,0 +1,93 @@
+---
+import { skills } from '../data/about';
+import { profile } from '../data/profile';
+---
+
+<section class="toolkit" aria-labelledby="toolkit-title" data-reveal>
+  <div class="toolkit__head">
+    <p class="eyebrow">Toolkit</p>
+    <h3 id="toolkit-title" class="display">What I work with, and where it shows</h3>
+  </div>
+  <dl class="toolkit__rows">
+    {
+      skills.map((s) => (
+        <div class="row">
+          <dt>{s.group}</dt>
+          <dd>
+            <ul class="chips">{s.items.map((i) => <li class="chip">{i}</li>)}</ul>
+            <p class="evidence">{s.evidence}</p>
+          </dd>
+        </div>
+      ))
+    }
+    <div class="row">
+      <dt>Spoken</dt>
+      <dd>
+        <ul class="chips">{profile.spokenLanguages.map((l) => <li class="chip">{l.name} · {l.level}</li>)}</ul>
+      </dd>
+    </div>
+  </dl>
+</section>
+
+<style>
+  .toolkit {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    margin-top: clamp(1rem, 3vw, 2rem);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .toolkit__head {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  .toolkit__rows {
+    display: grid;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1rem;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  dt {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .evidence {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .toolkit {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,305 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import portrait from '../assets/me/al-muktadir-islam-mahit.jpg';
+import { profile } from '../data/profile';
+import { contests } from '../data/contests';
+import { getCodeforces, rankFor } from '../data/codeforces';
+
+const cf = await getCodeforces();
+const rank = rankFor(cf.maxRating);
+const icpc = contests.filter((c) => c.kind === 'ICPC');
+const iupcCount = contests.filter((c) => c.kind === 'IUPC').length;
+---
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <div class="hero__text">
+      <p class="status" data-reveal>
+        <span class="status__dot" aria-hidden="true"></span>
+        <span>{profile.status}<span class="status__more"> · {profile.statusDetail}</span></span>
+      </p>
+
+      <h1 id="hero-title" class="display" data-reveal style="--reveal-delay:1">
+        Al-Muktadir Islam <em>Mahit</em>
+      </h1>
+
+      <p class="lede" data-reveal style="--reveal-delay:2">
+        Final-year Computer Science &amp; Engineering student at {profile.university}, Dhaka. I build software, compete
+        in programming contests, and write problems for others to solve.
+      </p>
+
+      <ul class="creds" data-reveal style="--reveal-delay:3" aria-label="Competitive programming">
+        <li class={`cf-${rank.key}`}>
+          <a href={profile.links.codeforces} target="_blank" rel="noopener">
+            <span class="creds__title"><span class="creds__rank">Codeforces {rank.title}</span></span>
+            <span class="creds__sub mono">max rating {cf.maxRating}</span>
+          </a>
+        </li>
+        <li>
+          <a href="#contests">
+            <span class="creds__title">{icpc.length}× ICPC Asia Dhaka Regionalist</span>
+            <span class="creds__sub mono">{icpc.map((c) => c.season).join(' · ')}</span>
+          </a>
+        </li>
+        <li>
+          <a href="#contests">
+            <span class="creds__title">{iupcCount}× IUPC</span>
+            <span class="creds__sub mono">inter-university contests</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="hero__actions" data-reveal style="--reveal-delay:4">
+        <a class="btn" href="#work">See my work <Icon name="arrow-right" /></a>
+        <a class="btn btn--ghost" href={profile.cv.href} target="_blank" rel="noopener"><Icon name="download" /> CV</a>
+        <ul class="socials" aria-label="Profiles">
+          <li><a href={profile.links.github} rel="me noopener" target="_blank" aria-label="GitHub"><Icon name="github" size={20} /></a></li>
+          <li><a href={profile.links.linkedin} rel="me noopener" target="_blank" aria-label="LinkedIn"><Icon name="linkedin" size={20} /></a></li>
+          <li><a href={profile.links.codeforces} rel="me noopener" target="_blank" aria-label="Codeforces"><Icon name="codeforces" size={20} /></a></li>
+          <li><a href={profile.links.facebook} rel="me noopener" target="_blank" aria-label="Facebook"><Icon name="facebook" size={20} /></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <figure class="hero__photo" data-reveal style="--reveal-delay:2">
+      <div class="photo">
+        <Image
+          src={portrait}
+          alt="Al-Muktadir Islam Mahit standing in the river at Jaflong, holding a closed umbrella, with misty hills behind."
+          widths={[360, 540, 720, 960]}
+          sizes="(max-width: 860px) 90vw, 30rem"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+      <figcaption class="mono"><Icon name="pin" size={13} /> Jaflong, Sylhet</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 7vw, 6rem) 0;
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4.2fr);
+    grid-template-areas: 'text photo';
+    column-gap: clamp(2rem, 5vw, 5rem);
+    row-gap: 2.5rem;
+    align-items: center;
+  }
+
+  .hero__text {
+    grid-area: text;
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    justify-self: start;
+    padding: 0.35rem 0.85rem 0.35rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 1.2rem;
+    background: var(--bg-elev);
+    font-size: 0.88rem;
+    color: var(--ink-2);
+  }
+
+  .status__dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .status__dot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: ping 2.4s var(--ease) infinite;
+    }
+  }
+
+  @keyframes ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    70%,
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+
+  h1 {
+    font-size: var(--step-5);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+  }
+
+  h1 em {
+    color: var(--accent);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .socials {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0;
+    margin-left: 0.25rem;
+    list-style: none;
+  }
+
+  .socials a {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    color: var(--ink-2);
+    transition: color 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .socials a:hover {
+    color: var(--ink);
+    background: var(--surface);
+  }
+
+  .hero__photo {
+    grid-area: photo;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .hero__photo .photo {
+    aspect-ratio: 4 / 5;
+    box-shadow: var(--shadow);
+  }
+
+  .hero__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 60% 30%;
+  }
+
+  figcaption {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .status__more {
+    color: var(--muted);
+  }
+
+  .creds {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    list-style: none;
+    border-block: 1px solid var(--line);
+  }
+
+  .creds li {
+    flex: 1 1 10rem;
+  }
+
+  .creds li + li {
+    border-left: 1px solid var(--line);
+  }
+
+  .creds a {
+    display: grid;
+    gap: 0.2rem;
+    height: 100%;
+    padding: 0.9rem 1rem;
+    text-decoration: none;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .creds li:first-child a {
+    padding-left: 0;
+  }
+
+  .creds a:hover {
+    background: var(--surface);
+  }
+
+  .creds li:first-child a:hover {
+    background: transparent;
+  }
+
+  .creds li:first-child a:hover .creds__rank {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .creds__title {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .creds__rank {
+    color: var(--cf, var(--ink));
+  }
+
+  .creds__sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .hero__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'text' 'photo';
+    }
+    .hero__photo .photo {
+      aspect-ratio: 4 / 3.4;
+    }
+    .hero__photo img {
+      object-position: 60% 22%;
+    }
+  }
+
+  /* On phones the icons wrap under the buttons; align their glyphs with the text edge. */
+  @media (max-width: 480px) {
+    .creds li {
+      flex-basis: 100%;
+    }
+    .creds li + li {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .creds a {
+      padding-inline: 0;
+      grid-template-columns: 1fr auto;
+      align-items: baseline;
+    }
+    .socials {
+      flex-basis: 100%;
+      margin-left: -0.6rem;
+    }
+  }
+</style>

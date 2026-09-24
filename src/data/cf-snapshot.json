@@ -1,0 +1,681 @@
+{
+ "handle": "Ethical_Mahit",
+ "fetchedAt": "2026-09-24",
+ "history": [
+  {
+   "t": 1708706100,
+   "r": 371,
+   "c": "Educational Codeforces Round 162 (Rated for Div. 2)"
+  },
+  {
+   "t": 1709052600,
+   "r": 617,
+   "c": "Codeforces Round 929 (Div. 3)"
+  },
+  {
+   "t": 1711645200,
+   "r": 788,
+   "c": "Codeforces Round 937 (Div. 4)"
+  },
+  {
+   "t": 1712424900,
+   "r": 913,
+   "c": "Codeforces Global Round 25"
+  },
+  {
+   "t": 1712595000,
+   "r": 951,
+   "c": "Codeforces Round 938 (Div. 3)"
+  },
+  {
+   "t": 1714496700,
+   "r": 916,
+   "c": "Codeforces Round 942 (Div. 2)"
+  },
+  {
+   "t": 1714669200,
+   "r": 880,
+   "c": "Codeforces Round 943 (Div. 3)"
+  },
+  {
+   "t": 1715359800,
+   "r": 879,
+   "c": "Codeforces Round 944 (Div. 4)"
+  },
+  {
+   "t": 1716223800,
+   "r": 894,
+   "c": "Codeforces Round 946 (Div. 3)"
+  },
+  {
+   "t": 1717086900,
+   "r": 880,
+   "c": "Educational Codeforces Round 166 (Rated for Div. 2)"
+  },
+  {
+   "t": 1717433400,
+   "r": 775,
+   "c": "Codeforces Round 950 (Div. 3)"
+  },
+  {
+   "t": 1717691700,
+   "r": 746,
+   "c": "Codeforces Round 951 (Div. 2)"
+  },
+  {
+   "t": 1718125500,
+   "r": 758,
+   "c": "Codeforces Round 952 (Div. 4)"
+  },
+  {
+   "t": 1719162300,
+   "r": 848,
+   "c": "Codeforces Round 954 (Div. 3)"
+  },
+  {
+   "t": 1719333300,
+   "r": 859,
+   "c": "Codeforces Round 955 (Div. 2, with prizes from NEAR!)"
+  },
+  {
+   "t": 1719506100,
+   "r": 919,
+   "c": "Educational Codeforces Round 167 (Rated for Div. 2)"
+  },
+  {
+   "t": 1719768900,
+   "r": 915,
+   "c": "EPIC Institute of Technology Round Summer 2024 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1720371000,
+   "r": 887,
+   "c": "Codeforces Round 956 (Div. 2) and ByteRace 2024"
+  },
+  {
+   "t": 1720716600,
+   "r": 994,
+   "c": "Codeforces Round 957 (Div. 3)"
+  },
+  {
+   "t": 1721061300,
+   "r": 1006,
+   "c": "Codeforces Round 958 (Div. 2)"
+  },
+  {
+   "t": 1721320500,
+   "r": 954,
+   "c": "Codeforces Round 959 sponsored by NEAR (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1722013500,
+   "r": 1069,
+   "c": "Codeforces Round 962 (Div. 3)"
+  },
+  {
+   "t": 1722188100,
+   "r": 954,
+   "c": "Pinely Round 4 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1723307700,
+   "r": 1059,
+   "c": "Codeforces Round 965 (Div. 2)"
+  },
+  {
+   "t": 1723568100,
+   "r": 1061,
+   "c": "Codeforces Round 966 (Div. 3)"
+  },
+  {
+   "t": 1727453100,
+   "r": 1026,
+   "c": "Codeforces Round 975 (Div. 2)"
+  },
+  {
+   "t": 1727631300,
+   "r": 1099,
+   "c": "Codeforces Round 976 (Div. 2) and Divide By Zero 9.0"
+  },
+  {
+   "t": 1728855300,
+   "r": 1047,
+   "c": "Codeforces Round 978 (Div. 2)"
+  },
+  {
+   "t": 1729960500,
+   "r": 993,
+   "c": "Codeforces Round 982 (Div. 2)"
+  },
+  {
+   "t": 1730133300,
+   "r": 1025,
+   "c": "Educational Codeforces Round 171 (Rated for Div. 2)"
+  },
+  {
+   "t": 1730478900,
+   "r": 1001,
+   "c": "Codeforces Round 983 (Div. 2)"
+  },
+  {
+   "t": 1733157300,
+   "r": 960,
+   "c": "Educational Codeforces Round 172 (Rated for Div. 2)"
+  },
+  {
+   "t": 1733417400,
+   "r": 939,
+   "c": "Codeforces Round 991 (Div. 3)"
+  },
+  {
+   "t": 1733675700,
+   "r": 970,
+   "c": "Codeforces Round 992 (Div. 2)"
+  },
+  {
+   "t": 1734281400,
+   "r": 974,
+   "c": "Codeforces Round 993 (Div. 4)"
+  },
+  {
+   "t": 1734712500,
+   "r": 929,
+   "c": "Codeforces Round 994 (Div. 2)"
+  },
+  {
+   "t": 1736699700,
+   "r": 1028,
+   "c": "Codeforces Round 996 (Div. 2)"
+  },
+  {
+   "t": 1737306300,
+   "r": 967,
+   "c": "Codeforces Round 998 (Div. 3)"
+  },
+  {
+   "t": 1737554700,
+   "r": 945,
+   "c": "Codeforces Round 1000 (Div. 2)"
+  },
+  {
+   "t": 1737911100,
+   "r": 1021,
+   "c": "Ethflow Round 1 (Codeforces Round 1001, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1738514100,
+   "r": 1028,
+   "c": "Codeforces Round 1002 (Div. 2)"
+  },
+  {
+   "t": 1739119800,
+   "r": 1042,
+   "c": "Codeforces Round 1003 (Div. 4)"
+  },
+  {
+   "t": 1739723700,
+   "r": 1024,
+   "c": "Codeforces Round 1005 (Div. 2)"
+  },
+  {
+   "t": 1740502200,
+   "r": 1084,
+   "c": "Codeforces Round 1006 (Div. 3)"
+  },
+  {
+   "t": 1740674100,
+   "r": 1053,
+   "c": "Educational Codeforces Round 175 (Rated for Div. 2)"
+  },
+  {
+   "t": 1740761400,
+   "r": 1067,
+   "c": "Codeforces Round 1007 (Div. 2)"
+  },
+  {
+   "t": 1741626900,
+   "r": 1024,
+   "c": "Codeforces Round 1008 (Div. 2)"
+  },
+  {
+   "t": 1741712700,
+   "r": 1084,
+   "c": "Codeforces Round 1009 (Div. 3)"
+  },
+  {
+   "t": 1742229300,
+   "r": 1147,
+   "c": "Educational Codeforces Round 176 (Rated for Div. 2)"
+  },
+  {
+   "t": 1742661300,
+   "r": 1157,
+   "c": "Codeforces Round 1011 (Div. 2)"
+  },
+  {
+   "t": 1742717100,
+   "r": 1104,
+   "c": "Codeforces Round 1012 (Div. 2)"
+  },
+  {
+   "t": 1742921400,
+   "r": 1098,
+   "c": "Codeforces Round 1013 (Div. 3)"
+  },
+  {
+   "t": 1743874500,
+   "r": 1114,
+   "c": "Teza Round 1 (Codeforces Round 1015, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1744131000,
+   "r": 1152,
+   "c": "Codeforces Round 1016 (Div. 3)"
+  },
+  {
+   "t": 1744566600,
+   "r": 1153,
+   "c": "Codeforces Round 1017 (Div. 4)"
+  },
+  {
+   "t": 1745253300,
+   "r": 1198,
+   "c": "Codeforces Round 1019 (Div. 2)"
+  },
+  {
+   "t": 1745858100,
+   "r": 1167,
+   "c": "Educational Codeforces Round 178 (Rated for Div. 2)"
+  },
+  {
+   "t": 1746117300,
+   "r": 1151,
+   "c": "Codeforces Round 1022 (Div. 2)"
+  },
+  {
+   "t": 1746463800,
+   "r": 1184,
+   "c": "Codeforces Round 1023 (Div. 2)"
+  },
+  {
+   "t": 1746983100,
+   "r": 1187,
+   "c": "Codeforces Round 1024 (Div. 2)"
+  },
+  {
+   "t": 1748104500,
+   "r": 1193,
+   "c": "Codeforces Round 1026 (Div. 2)"
+  },
+  {
+   "t": 1748278200,
+   "r": 1181,
+   "c": "Codeforces Round 1027 (Div. 3)"
+  },
+  {
+   "t": 1748709300,
+   "r": 1165,
+   "c": "Codeforces Round 1028 (Div. 2)"
+  },
+  {
+   "t": 1750179000,
+   "r": 1123,
+   "c": "Codeforces Round 1032 (Div. 3)"
+  },
+  {
+   "t": 1750696500,
+   "r": 1083,
+   "c": "Educational Codeforces Round 180 (Rated for Div. 2)"
+  },
+  {
+   "t": 1751388600,
+   "r": 1158,
+   "c": "Codeforces Round 1034 (Div. 3)"
+  },
+  {
+   "t": 1752771000,
+   "r": 1240,
+   "c": "Codeforces Round 1037 (Div. 3)"
+  },
+  {
+   "t": 1753202100,
+   "r": 1154,
+   "c": "Educational Codeforces Round 181 (Rated for Div. 2)"
+  },
+  {
+   "t": 1753983300,
+   "r": 1074,
+   "c": "Codeforces Round 1040 (Div. 2)"
+  },
+  {
+   "t": 1754588100,
+   "r": 1085,
+   "c": "Atto Round 1 (Codeforces Round 1041, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1754844600,
+   "r": 1057,
+   "c": "Codeforces Round 1042 (Div. 3)"
+  },
+  {
+   "t": 1755795000,
+   "r": 1052,
+   "c": "Codeforces Round 1043 (Div. 3)"
+  },
+  {
+   "t": 1756053300,
+   "r": 1109,
+   "c": "Codeforces Round 1044 (Div. 2)"
+  },
+  {
+   "t": 1756402500,
+   "r": 1092,
+   "c": "Codeforces Round 1046 (Div. 2)"
+  },
+  {
+   "t": 1757263800,
+   "r": 1065,
+   "c": "Codeforces Round 1047 (Div. 3)"
+  },
+  {
+   "t": 1757435700,
+   "r": 1072,
+   "c": "Codeforces Round 1049 (Div. 2)"
+  },
+  {
+   "t": 1757782200,
+   "r": 1159,
+   "c": "Codeforces Round 1050 (Div. 4)"
+  },
+  {
+   "t": 1757954100,
+   "r": 1160,
+   "c": "Educational Codeforces Round 182 (Rated for Div. 2)"
+  },
+  {
+   "t": 1758126900,
+   "r": 1119,
+   "c": "Codeforces Round 1051 (Div. 2)"
+  },
+  {
+   "t": 1758473400,
+   "r": 1109,
+   "c": "Codeforces Round 1052 (Div. 2)"
+  },
+  {
+   "t": 1758725400,
+   "r": 1136,
+   "c": "Codeforces Round 1053 (Div. 2)"
+  },
+  {
+   "t": 1758819000,
+   "r": 1155,
+   "c": "Codeforces Round 1054 (Div. 3)"
+  },
+  {
+   "t": 1759512900,
+   "r": 1140,
+   "c": "Squarepoint Challenge (Codeforces Round 1055, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1759689300,
+   "r": 1179,
+   "c": "Codeforces Round 1056 (Div. 2)"
+  },
+  {
+   "t": 1759768500,
+   "r": 1152,
+   "c": "Educational Codeforces Round 183 (Rated for Div. 2)"
+  },
+  {
+   "t": 1760115000,
+   "r": 1154,
+   "c": "Codeforces Round 1057 (Div. 2)"
+  },
+  {
+   "t": 1760288700,
+   "r": 1091,
+   "c": "Codeforces Round 1058 (Div. 2)"
+  },
+  {
+   "t": 1760891700,
+   "r": 1169,
+   "c": "Codeforces Round 1060 (Div. 2)"
+  },
+  {
+   "t": 1761670200,
+   "r": 1189,
+   "c": "Codeforces Round 1062 (Div. 4)"
+  },
+  {
+   "t": 1761852900,
+   "r": 1186,
+   "c": "Pinely Round 5 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1762450500,
+   "r": 1076,
+   "c": "Codeforces Global Round 30 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1763138100,
+   "r": 1060,
+   "c": "Educational Codeforces Round 184 (Rated for Div. 2)"
+  },
+  {
+   "t": 1763310900,
+   "r": 1177,
+   "c": "Codeforces Round 1064 (Div. 2)"
+  },
+  {
+   "t": 1763658300,
+   "r": 1154,
+   "c": "Codeforces Round 1065 (Div. 3)"
+  },
+  {
+   "t": 1763901300,
+   "r": 1130,
+   "c": "Codeforces Round 1066 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1764347700,
+   "r": 1122,
+   "c": "Educational Codeforces Round 185 (Rated for Div. 2)"
+  },
+  {
+   "t": 1764434100,
+   "r": 1100,
+   "c": "Codeforces Round 1067 (Div. 2)"
+  },
+  {
+   "t": 1764952500,
+   "r": 1113,
+   "c": "Codeforces Round 1068 (Div. 2)"
+  },
+  {
+   "t": 1765016100,
+   "r": 1104,
+   "c": "Codeforces Round 1069 (Div. 2)"
+  },
+  {
+   "t": 1765470900,
+   "r": 1102,
+   "c": "Codeforces Round 1070 (Div. 2)"
+  },
+  {
+   "t": 1766163900,
+   "r": 1153,
+   "c": "Codeforces Global Round 31 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1766510100,
+   "r": 1195,
+   "c": "Codeforces Round 1071 (Div. 3)"
+  },
+  {
+   "t": 1766856900,
+   "r": 1163,
+   "c": "Good Bye 2025"
+  },
+  {
+   "t": 1767807300,
+   "r": 1106,
+   "c": "Hello 2026"
+  },
+  {
+   "t": 1768236600,
+   "r": 1059,
+   "c": "Codeforces Round 1072 (Div. 3)"
+  },
+  {
+   "t": 1770548700,
+   "r": 1085,
+   "c": "Codeforces Round 1078 (Div. 2)"
+  },
+  {
+   "t": 1771175700,
+   "r": 1091,
+   "c": "Codeforces Round 1080 (Div. 3)"
+  },
+  {
+   "t": 1771691700,
+   "r": 1138,
+   "c": "Codeforces Round 1081 (Div. 2)"
+  },
+  {
+   "t": 1771866300,
+   "r": 1083,
+   "c": "Codeforces Round 1082 (Div. 2)"
+  },
+  {
+   "t": 1772991300,
+   "r": 1124,
+   "c": "Codeforces Round 1085 (Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1773506100,
+   "r": 1107,
+   "c": "Codeforces Round 1086 (Div. 2)"
+  },
+  {
+   "t": 1773679800,
+   "r": 1209,
+   "c": "Educational Codeforces Round 188 (Rated for Div. 2)"
+  },
+  {
+   "t": 1775321400,
+   "r": 1228,
+   "c": "Codeforces Round 1090 (Div. 4)"
+  },
+  {
+   "t": 1775580600,
+   "r": 1224,
+   "c": "Codeforces Round 1091 (Div. 2) and CodeCraft 26"
+  },
+  {
+   "t": 1776098100,
+   "r": 1165,
+   "c": "Codeforces Round 1093 (Div. 2)"
+  },
+  {
+   "t": 1777136700,
+   "r": 1137,
+   "c": "Spectral::Cup 2026 Round 1 (Codeforces Round 1094, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1777395000,
+   "r": 1098,
+   "c": "Codeforces Round 1095 (Div. 2)"
+  },
+  {
+   "t": 1777568700,
+   "r": 1083,
+   "c": "Codeforces Round 1096 (Div. 3)"
+  },
+  {
+   "t": 1778950200,
+   "r": 1101,
+   "c": "Codeforces Round 1098 (Div. 2)"
+  },
+  {
+   "t": 1779381300,
+   "r": 1073,
+   "c": "Codeforces Round 1099 (Div. 2)"
+  },
+  {
+   "t": 1779557700,
+   "r": 1109,
+   "c": "Spectral::Cup 2026 Round 2 (Codeforces Round 1100, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1780851000,
+   "r": 1105,
+   "c": "Codeforces Round 1102 (Div. 2)"
+  },
+  {
+   "t": 1781804100,
+   "r": 1133,
+   "c": "Order Capital Round 2 (Codeforces Round 1104, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1782664500,
+   "r": 1113,
+   "c": "Codeforces Round 1106 (Div. 2)"
+  },
+  {
+   "t": 1782838200,
+   "r": 1105,
+   "c": "Codeforces Round 1107 (Div. 3)"
+  },
+  {
+   "t": 1783355700,
+   "r": 1049,
+   "c": "Educational Codeforces Round 192 (Rated for Div. 2)"
+  },
+  {
+   "t": 1784047800,
+   "r": 1065,
+   "c": "Codeforces Round 1109 (Div. 3)"
+  },
+  {
+   "t": 1784222100,
+   "r": 1108,
+   "c": "Spectral::Cup 2026 Round 3 (Codeforces Round 1110, Div. 1 + Div. 2)"
+  },
+  {
+   "t": 1785085500,
+   "r": 1100,
+   "c": "Codeforces Round 1112 (Div. 2)"
+  },
+  {
+   "t": 1785603900,
+   "r": 1130,
+   "c": "Codeforces Round 1113 (Div. 2)"
+  },
+  {
+   "t": 1785862200,
+   "r": 1171,
+   "c": "Codeforces Round 1114 (Div. 3)"
+  },
+  {
+   "t": 1786034100,
+   "r": 1190,
+   "c": "Codeforces Round 1115 (Div. 2)"
+  },
+  {
+   "t": 1786295100,
+   "r": 1192,
+   "c": "Codeforces Round 1116 (Div. 2)"
+  },
+  {
+   "t": 1786984500,
+   "r": 1247,
+   "c": "Codeforces Round 1117 (Div. 2)"
+  },
+  {
+   "t": 1788627600,
+   "r": 1278,
+   "c": "Codeforces Round 1119 (Div. 3)"
+  }
+ ]
+}

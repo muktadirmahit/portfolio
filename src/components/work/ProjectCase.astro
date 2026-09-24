@@ -1,0 +1,247 @@
+---
+import type { Project } from '../../data/projects';
+import Icon from '../Icon.astro';
+import Zoomable from '../Zoomable.astro';
+import Filmstrip from './Filmstrip.astro';
+
+interface Props {
+  project: Project;
+  index: number;
+}
+const { project: p, index } = Astro.props;
+const num = String(index + 1).padStart(2, '0');
+---
+
+<article class="case" id={p.id} aria-labelledby={`${p.id}-title`}>
+  <header class="case__head" data-reveal>
+    <p class="case__num mono" aria-hidden="true">{num}</p>
+    <div>
+      <p class="eyebrow">{p.kicker}</p>
+      <h3 id={`${p.id}-title`}>{p.name}</h3>
+    </div>
+    {
+      p.recognition && (
+        <p class="case__award">
+          <Icon name="trophy" size={16} />
+          <span>{p.recognition}</span>
+        </p>
+      )
+    }
+  </header>
+
+  <div class="case__intro">
+    <div class="case__meta" data-reveal>
+      <p class="case__tagline">{p.tagline}</p>
+
+      <dl class="facts">
+        <div>
+          <dt class="eyebrow">What I built</dt>
+          <dd>
+            <ul class="mine">{p.myPart.map((m) => <li>{m}</li>)}</ul>
+          </dd>
+        </div>
+        <div>
+          <dt class="eyebrow">Team</dt>
+          <dd>{p.team}</dd>
+        </div>
+        <div>
+          <dt class="eyebrow">Stack</dt>
+          <dd><ul class="chips">{p.stack.map((s) => <li class="chip">{s}</li>)}</ul></dd>
+        </div>
+      </dl>
+
+      {
+        p.links.length > 0 && (
+          <p class="case__links">
+            {p.links.map((l) => (
+              <a class="link-arrow" href={l.href} target="_blank" rel="noopener">
+                {l.label} <Icon name="arrow-up-right" />
+              </a>
+            ))}
+          </p>
+        )
+      }
+    </div>
+
+    <div class="case__media" data-reveal style="--reveal-delay:1">
+      {
+        Astro.slots.has('media') ? (
+          <slot name="media" />
+        ) : (
+          <div class="case__cover">
+            <Zoomable src={p.cover.src} alt={p.cover.alt} caption={p.cover.alt} sizes="(max-width: 960px) 92vw, 44rem" widths={[480, 720, 1000, 1400]} />
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <slot name="detail" />
+
+  {
+    p.notes.length > 0 && (
+      <div class="notes">
+        {p.notes.map((n, i) => (
+          <section class="note" data-reveal style={`--reveal-delay:${i}`}>
+            <h4>{n.title}</h4>
+            <p>{n.body}</p>
+          </section>
+        ))}
+      </div>
+    )
+  }
+
+
+  <div data-reveal>
+    <Filmstrip shots={p.gallery} group={p.id} label={`${p.name} screenshots`} />
+  </div>
+</article>
+
+<style>
+  .case {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.75rem, 3.5vw, 2.75rem);
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .case__head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 0 clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .case__num {
+    align-self: start;
+    font-size: var(--step--1);
+    color: var(--accent);
+    padding-top: 0.3rem;
+  }
+
+  h3 {
+    margin-top: 0.35rem;
+    font-family: var(--font-sans);
+    font-size: clamp(1.9rem, 1.4rem + 1.8vw, 2.9rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  .case__award {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 22rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .case__award :global(svg) {
+    flex: none;
+    color: var(--accent);
+  }
+
+  .case__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+
+  .case__meta {
+    display: grid;
+    gap: 1.6rem;
+  }
+
+  .case__tagline {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  .facts {
+    display: grid;
+    gap: 1.1rem;
+  }
+
+  .facts dt {
+    margin-bottom: 0.4rem;
+  }
+
+  .mine {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mine li {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-weight: 500;
+  }
+
+  .mine li::before {
+    content: '';
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 2px;
+    background: var(--accent);
+    translate: 0 -0.1rem;
+  }
+
+  .case__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .case__cover {
+    aspect-ratio: 16 / 10.5;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+  }
+
+  .note h4 {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .note p {
+    color: var(--ink-2);
+    font-size: 0.97rem;
+  }
+
+  @media (max-width: 960px) {
+    .case__intro {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .case__head {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .case__award {
+      grid-column: 1 / -1;
+      margin-top: 1rem;
+      justify-self: start;
+    }
+  }
+
+</style>

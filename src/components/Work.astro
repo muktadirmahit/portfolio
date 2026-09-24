@@ -1,0 +1,31 @@
+---
+import SectionHead from './SectionHead.astro';
+import ProjectCase from './work/ProjectCase.astro';
+import AsterraArch from './work/AsterraArch.astro';
+import BotSystems from './work/BotSystems.astro';
+import Toolkit from './Toolkit.astro';
+import { projects } from '../data/projects';
+
+const [asterra, bot, codequest] = projects;
+---
+
+<section class="section" id="work" aria-labelledby="work-title">
+  <div class="container">
+    <SectionHead label="Selected work" title="Things I’ve built" id="work-title">
+      Three projects, three kinds of engineering: networked desktop software, an embedded robot, and a product designed
+      from scratch. Each one says what I personally built.
+    </SectionHead>
+
+    <ProjectCase project={asterra} index={0}>
+      <AsterraArch slot="detail" />
+    </ProjectCase>
+
+    <ProjectCase project={bot} index={1}>
+      <BotSystems slot="detail" />
+    </ProjectCase>
+
+    <ProjectCase project={codequest} index={2} />
+
+    <Toolkit />
+  </div>
+</section>

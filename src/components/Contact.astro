@@ -1,0 +1,186 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../data/profile';
+
+const links = [
+  { label: 'LinkedIn', href: profile.links.linkedin, icon: 'linkedin' as const },
+  { label: 'GitHub', href: profile.links.github, icon: 'github' as const },
+  { label: 'Codeforces', href: profile.links.codeforces, icon: 'codeforces' as const },
+  { label: 'Facebook', href: profile.links.facebook, icon: 'facebook' as const },
+];
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="contact__card" data-reveal>
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Contact</p>
+      <h2 id="contact-title" class="display">Let’s talk.</h2>
+      <p class="lede">
+        I’m open to software engineering roles: internship, part-time or full-time, in Bangladesh, remote, or abroad.
+        I’m also glad to talk about graduate study and research. Email is the fastest way to reach me.
+      </p>
+
+      <div class="email">
+        <a class="email__link display" href={`mailto:${profile.email}`}>{profile.email}</a>
+        <button type="button" class="email__copy" data-copy={profile.email}>
+          <span class="copy-idle"><Icon name="copy" size={16} /> Copy</span>
+          <span class="copy-done" hidden><Icon name="check" size={16} /> Copied</span>
+        </button>
+        <span class="sr-only" aria-live="polite" data-copy-status></span>
+      </div>
+
+      <ul class="links">
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} target="_blank" rel="me noopener">
+                <Icon name={l.icon} size={18} /> {l.label}
+                <Icon name="arrow-up-right" size={14} class="ext" />
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a href={profile.cv.href} target="_blank" rel="noopener">
+            <Icon name="download" size={18} /> CV
+            {!profile.cv.ready && <span class="soon mono">updated soon</span>}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    const idle = btn.querySelector<HTMLElement>('.copy-idle')!;
+    const done = btn.querySelector<HTMLElement>('.copy-done')!;
+    const status = btn.parentElement?.querySelector<HTMLElement>('[data-copy-status]');
+    let timer: number | undefined;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+        idle.hidden = true;
+        done.hidden = false;
+        if (status) status.textContent = 'Email address copied';
+        clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          idle.hidden = false;
+          done.hidden = true;
+          if (status) status.textContent = '';
+        }, 2000);
+      } catch {
+        // Clipboard can be blocked (permissions, insecure context); fall back to opening the mail client.
+        window.location.href = `mailto:${btn.dataset.copy}`;
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact__card {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(2rem, 6vw, 5rem);
+    border-radius: calc(var(--radius) * 1.5);
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: color-mix(in oklab, var(--bg) 65%, var(--ink));
+  }
+
+  .eyebrow .dot {
+    width: 0.45rem;
+    height: 0.45rem;
+  }
+
+  h2 {
+    font-size: var(--step-5);
+    line-height: 1;
+  }
+
+  .lede {
+    color: color-mix(in oklab, var(--bg) 80%, var(--ink));
+  }
+
+  .email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .email__link {
+    font-size: clamp(1.5rem, 1rem + 2.6vw, 3rem);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklab, var(--bg) 35%, var(--ink));
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+    transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .email__link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .email__copy {
+    display: inline-flex;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--bg) 30%, var(--ink));
+    background: transparent;
+    color: var(--bg);
+    font-size: 0.88rem;
+  }
+
+  .email__copy span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .email__copy:hover {
+    border-color: var(--bg);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--bg) 10%, var(--ink));
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background-color 0.2s var(--ease);
+  }
+
+  .links a:hover {
+    background: color-mix(in oklab, var(--bg) 20%, var(--ink));
+  }
+
+  .links :global(.ext) {
+    opacity: 0.6;
+  }
+
+  .soon {
+    font-size: 0.72rem;
+    opacity: 0.7;
+  }
+</style>

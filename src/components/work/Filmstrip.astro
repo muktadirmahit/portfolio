@@ -1,0 +1,55 @@
+---
+// Horizontal strip of photos at their natural aspect ratio; each opens in the lightbox.
+import type { Shot } from '../../data/projects';
+import Zoomable from '../Zoomable.astro';
+
+interface Props {
+  shots: Shot[];
+  group: string;
+  label: string;
+}
+const { shots, group, label } = Astro.props;
+---
+
+<div class="strip" role="region" aria-label={label} tabindex="0">
+  <ul>
+    {
+      shots.map((s) => (
+        <li style={`--ar:${(s.src.width / s.src.height).toFixed(3)}`}>
+          <Zoomable src={s.src} alt={s.alt} caption={s.caption} group={group} widths={[320, 520, 760]} sizes="(max-width: 640px) 70vw, 360px" />
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .strip {
+    --h: clamp(150px, 22vw, 210px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+    padding-bottom: 0.75rem;
+    border-radius: var(--radius-sm);
+  }
+
+  ul {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+    width: max-content;
+  }
+
+  li {
+    height: var(--h);
+    width: calc(var(--h) * var(--ar));
+    max-width: 78vw;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    scroll-snap-align: start;
+  }
+</style>

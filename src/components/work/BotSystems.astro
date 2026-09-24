@@ -1,0 +1,199 @@
+---
+// Security Bot: numbered subsystems, with markers on the photo for the visible ones.
+// Hovering or focusing a marker highlights its row, and the other way round.
+import { Image, getImage } from 'astro:assets';
+import front from '../../assets/projects/spybot/front.jpg';
+import { botSystems } from '../../data/projects';
+
+const full = await getImage({ src: front, width: 1400, format: 'webp', quality: 82 });
+const frontAlt =
+  'Front view of the Supervision & Security Bot: off-road wheels, a blue robotic arm, an ESP32-CAM module, a gas sensor and an ultrasonic sensor on a servo mast.';
+---
+
+<div class="bot">
+  <figure class="bot__figure" data-reveal>
+    <div class="bot__photo">
+      <button type="button" class="bot__zoom" data-lightbox="security-bot-front" data-full={full.src} data-alt={frontAlt} data-caption="Front view: camera, gas sensor, arm and radar mast" aria-label="View larger photo of the robot">
+        <Image src={front} alt={frontAlt} widths={[400, 640, 900]} sizes="(max-width: 960px) 92vw, 30rem" />
+      </button>
+      {
+        botSystems.map((s, i) =>
+          s.spot ? (
+            <button
+              type="button"
+              class="marker mono"
+              style={`left:${s.spot.x}%;top:${s.spot.y}%`}
+              data-sys={i}
+              aria-label={`${i + 1}: ${s.name}`}
+              aria-describedby={`sys-${i}`}
+            >
+              {i + 1}
+            </button>
+          ) : null,
+        )
+      }
+    </div>
+    <figcaption class="muted">Tap a number to find it in the list.</figcaption>
+  </figure>
+
+  <ol class="systems" data-reveal style="--reveal-delay:1">
+    {
+      botSystems.map((s, i) => (
+        <li data-sys={i} class:list={{ 'has-spot': !!s.spot }}>
+          <span class="num mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <div>
+            <h4>{s.name}</h4>
+            <p id={`sys-${i}`}>{s.detail}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.bot').forEach((bot) => {
+    const set = (id: string | null) =>
+      bot.querySelectorAll<HTMLElement>('[data-sys]').forEach((el) => el.classList.toggle('is-active', el.dataset.sys === id));
+    bot.querySelectorAll<HTMLElement>('.marker, .systems li.has-spot').forEach((el) => {
+      const on = () => set(el.dataset.sys ?? null);
+      el.addEventListener('pointerenter', on);
+      el.addEventListener('focus', on);
+      el.addEventListener('click', on);
+      el.addEventListener('pointerleave', () => set(null));
+      el.addEventListener('blur', () => set(null));
+    });
+  });
+</script>
+
+<style>
+  .bot {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  .bot__figure {
+    display: grid;
+    gap: 0.7rem;
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .bot__figure figcaption {
+    font-size: 0.85rem;
+  }
+
+  .bot__photo {
+    position: relative;
+    aspect-ratio: 1488 / 2000;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .bot__zoom {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--surface);
+    cursor: zoom-in;
+  }
+
+  .bot__zoom :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .marker {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    translate: -50% -50%;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+    transition: transform 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .marker.is-active,
+  .marker:hover {
+    transform: scale(1.18);
+    background: #16181b;
+  }
+
+  .systems {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .systems li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elev);
+    transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+  }
+
+  .systems li.is-active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .num {
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding-top: 0.1rem;
+  }
+
+  .has-spot .num {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .systems h4 {
+    font-family: var(--font-sans);
+    font-size: 0.98rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .systems p {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 960px) {
+    .bot {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bot__figure {
+      position: static;
+      max-width: 26rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .systems {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+interface Props {
+  label: string;
+  title: string;
+  id?: string;
+}
+const { label, title, id } = Astro.props;
+---
+
+<header class="section-head" data-reveal>
+  <p class="eyebrow"><span class="dot" aria-hidden="true"></span>{label}</p>
+  <h2 class="display" id={id}>{title}</h2>
+  {Astro.slots.has('default') && <div class="lede"><slot /></div>}
+</header>
+
+<style>
+  .section-head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    max-width: 52rem;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .eyebrow .dot {
+    width: 0.45rem;
+    height: 0.45rem;
+  }
+
+  h2 {
+    font-size: var(--step-4);
+  }
+</style>

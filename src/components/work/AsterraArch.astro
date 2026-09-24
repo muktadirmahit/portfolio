@@ -1,0 +1,277 @@
+---
+// AsterraQuest architecture: what runs where, and which parts I built.
+import { protocolSample } from '../../data/projects';
+
+const rows = [
+  { client: 'Multiplayer match', link: 'TCP · port 5555', service: 'Game server', note: 'thread per player, match pairing', mine: true },
+  { client: 'Store · Profile · Rankings', link: 'file I/O', service: 'Player data', note: 'accounts, coins, wins & losses', mine: true },
+  { client: 'World chat', link: 'TCP · port 5000', service: 'Chat server', note: 'broadcast to all clients', mine: false },
+  { client: 'AI co-pilot', link: 'HTTPS', service: 'LLM API', note: 'OpenRouter chat completions', mine: false },
+];
+---
+
+<div class="arch" data-reveal>
+  <figure class="diagram">
+    <figcaption class="diagram__cap">
+      <span class="eyebrow">How it fits together</span>
+      <span class="legend"><span class="swatch" aria-hidden="true"></span> Built by me</span>
+    </figcaption>
+    <div class="diagram__body">
+      <p class="client-label mono"><span>JavaFX client</span></p>
+      <ol class="rows">
+        {
+          rows.map((r) => (
+            <li class:list={['row', { 'is-mine': r.mine }]}>
+              <span class="node node--client">{r.client}</span>
+              <span class="wire mono" aria-label={`connects over ${r.link} to`}>
+                <span>{r.link}</span>
+              </span>
+              <span class="node node--service">
+                <strong>{r.service}</strong>
+                <small>{r.note}</small>
+                {r.mine && <span class="sr-only">(built by me)</span>}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </figure>
+
+  <figure class="protocol">
+    <figcaption class="eyebrow">A match, as the server sees it</figcaption>
+    <pre class="mono" aria-label="Example message exchange between client and game server"><code>{protocolSample.map(([dir, msg]) => <span class:list={['line', dir === '→' ? 'out' : 'in']}><span class="dir" aria-hidden="true">{dir}</span>{msg}{'\n'}</span>)}</code></pre>
+    <p class="protocol__key mono"><span class="out">→ client</span><span class="in">← server</span></p>
+  </figure>
+</div>
+
+<style>
+  .arch {
+    display: grid;
+    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+
+  .diagram,
+  .protocol {
+    padding: clamp(1rem, 2.5vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+  }
+
+  .diagram__cap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .swatch {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 3px;
+    background: var(--accent-soft);
+    border: 1.5px solid var(--accent);
+  }
+
+  .diagram__body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .client-label {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .client-label span {
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .rows {
+    display: grid;
+    gap: 0.6rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 0.8fr) minmax(0, 1.15fr);
+    align-items: center;
+  }
+
+  .node {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .node--service {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .node--service strong {
+    font-weight: 600;
+  }
+
+  .node--service small {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .is-mine .node--service {
+    background: var(--accent-soft);
+    border: 1.5px solid var(--accent);
+  }
+
+  .wire {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .wire::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 1.5px dashed var(--line-strong);
+  }
+
+  .wire::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-top: 1.5px solid var(--line-strong);
+    border-right: 1.5px solid var(--line-strong);
+    transform: translate(-1px, -50%) rotate(45deg);
+    translate: 0 -1px;
+  }
+
+  .is-mine .wire::before,
+  .is-mine .wire::after {
+    border-color: var(--accent);
+  }
+
+  .wire span {
+    position: relative;
+    padding: 0.1rem 0.35rem;
+    background: var(--bg-elev);
+    white-space: nowrap;
+  }
+
+  .protocol {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.9rem;
+    background: #141716;
+    border-color: #2a2f2d;
+    color: #d9d6ce;
+  }
+
+  .protocol .eyebrow {
+    color: #9b9e97;
+  }
+
+  pre {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    overflow-x: auto;
+  }
+
+  .line {
+    display: block;
+  }
+
+  .dir {
+    display: inline-block;
+    width: 1.6em;
+  }
+
+  .out {
+    color: #f2a08f;
+  }
+
+  .in {
+    color: #7fd3b0;
+  }
+
+  .protocol__key {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 960px) {
+    .arch {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .diagram__body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .client-label {
+      width: auto;
+      padding: 0.35rem;
+    }
+    .client-label span {
+      writing-mode: horizontal-tb;
+      rotate: none;
+    }
+    .row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+    .wire {
+      height: 2.25rem;
+    }
+    .wire::before {
+      left: 50%;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      border-top: 0;
+      border-left: 1.5px dashed var(--line-strong);
+    }
+    .wire::after {
+      display: none;
+    }
+    .is-mine .wire::before {
+      border-color: var(--accent);
+    }
+  }
+</style>

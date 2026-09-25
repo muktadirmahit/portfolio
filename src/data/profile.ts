@@ -40,5 +40,5 @@ export const seo = {
   description:
     'Al-Muktadir Islam Mahit (Mahit) is a final-year CSE student at United International University, Dhaka: 2× ICPC Asia Dhaka Regional contestant, 1,500+ problems solved, problem setter, and builder of networked Java software and embedded robots.',
   // Google Search Console verification code (HTML tag method). Leave empty to skip.
-  googleSiteVerification: '',
+  googleSiteVerification: '-c98kxefULve5foiS3Y3BGtDL4wf6HO31m1lz4hq3TU',
 };
